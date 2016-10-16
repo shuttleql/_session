@@ -3,6 +3,8 @@ import Keys._
 import org.scalatra.sbt._
 import org.scalatra.sbt.PluginKeys._
 import com.earldouglas.xwp.JettyPlugin
+import com.earldouglas.xwp.JettyPlugin.autoImport._
+import com.earldouglas.xwp.ContainerPlugin.autoImport._
 import com.mojolly.scalate.ScalatePlugin._
 import ScalateKeys._
 
@@ -44,7 +46,8 @@ object SessionServiceBuild extends Build {
             Some("templates")
           )
         )
-      }
+      },
+      containerPort in Jetty := 8081
     )
   ).enablePlugins(JettyPlugin)
 }

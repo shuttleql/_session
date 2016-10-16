@@ -32,15 +32,8 @@ class SessionServiceServlet extends SessionServiceStack with JacksonJsonSupport 
   }
 
   post("/checkin") {
-  	// email = param[email]
-  	// password = param[password]
-
-  	// user = userService.findUser(email, password)
-  	// if user.password_hash == HashWithSalt(password)
-  	//		UserToSession.create(user.id, ClubSession.id, checkin: Time.now)
-  	//		OK()
-  	// else
-  	// 		NotFound()
+  	// user_id = param[user_id]
+    // UserToSession.create(user.id, ClubSession.id, checkin: Time.now)
   	Ok()
   }
 

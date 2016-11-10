@@ -56,7 +56,7 @@ object SessionsDAO extends TableQuery(new Sessions(_)) {
     }
   }
 
-  def end() {
+  def end(): Option[Session] = {
     val db = initDb
 
     try {

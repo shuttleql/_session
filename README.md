@@ -1,15 +1,19 @@
 # Session Service #
 
+## Install sbt ##
+```sh
+brew install sbt
+```
+
 ## Build & Run ##
 
 ```sh
-$ cd Session_Service
-$ ./sbt
+$ sbt
 > jetty:start
 > browse
 ```
 
-If `browse` doesn't launch your browser, manually open [http://localhost:8080/](http://localhost:8080/) in your browser.
+If `browse` doesn't launch your browser, manually open [http://localhost:8081/](http://localhost:8081/) in your browser.
 
 ## Other ##
 
@@ -19,6 +23,7 @@ If `browse` doesn't launch your browser, manually open [http://localhost:8080/](
 $ export DB_PG_URL="jdbc:postgresql://localhost:5432"
 $ export DB_PG_USER=<username>
 $ export DB_PG_PWD=<password>
+$ export HMAC_SECRET=<secret>
 ```
 
 ### Set up initial db

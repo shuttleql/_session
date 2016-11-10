@@ -2,10 +2,11 @@ package com.shuttleql.services.session
 
 import org.scalatra.json._
 import org.json4s.{DefaultFormats, Formats}
-import org.scalatra.Ok
 import org.slf4j.{Logger, LoggerFactory}
 import com.shuttleql.services.session.tables.{Session, Sessions, UserToSession, UserToSessions}
 import org.scalatra._
+import com.typesafe.config._
+import com.gandalf.HMACAuth
 
 // Strong params
 case class UserParams(id: Int)
@@ -14,8 +15,37 @@ class SessionServiceServlet extends SessionServiceStack with JacksonJsonSupport 
 
   protected implicit val jsonFormats: Formats = DefaultFormats
 
+  val conf = ConfigFactory.load();
+
+  private def getRequest = enrichRequest(request)
+  private def getResponse = enrichResponse(response)
+
   before() {
+    auth
     contentType = formats("json")
+  }
+
+  def auth() {
+    val token = getRequest.header("Authorization")
+    val key = getRequest.header("Authorization-Key")
+    val secret = conf.getString("secrets.hmac_secret")
+
+    (token, key) match {
+      case (Some(t), Some(k)) =>
+        val split = t.split("HMAC ")
+        split.length match {
+          case 2 =>
+            HMACAuth.validateHost(split(1), k, secret) match {
+              case true => return
+              case false =>
+                halt(status=401, reason="Forbidden");
+            }
+          case _ =>
+            halt(status=401, reason="Forbidden");
+        }
+      case _ =>
+        halt(status=401, reason="Forbidden");
+    }
   }
 
   get("/setup") {
@@ -33,8 +63,6 @@ class SessionServiceServlet extends SessionServiceStack with JacksonJsonSupport 
         InternalServerError(reason = "Error creating user to session tables.")
     }
   }
-
-  // TODO check for secret key in all routes below
 
   get("/current") {
     SessionsDAO.current() match {

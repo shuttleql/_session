@@ -4,10 +4,10 @@ import org.scalatra.json._
 import org.json4s.{DefaultFormats, Formats}
 import org.scalatra.Ok
 import org.slf4j.{Logger, LoggerFactory}
-import com.shuttleql.services.session.tables.{Session, Sessions, UserToSession, UserToSessions}
-import org.scalatra._
 import com.typesafe.config._
 import com.gandalf.HMACAuth
+import com.shuttleql.services.session.tables.{Session, Sessions, UserToSession, UserToSessions}
+import org.scalatra._
 
 // Strong params
 case class UserParams(id: Int)

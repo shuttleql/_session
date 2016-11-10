@@ -36,10 +36,11 @@ object SessionServiceBuild extends Build {
         "javax.servlet" % "javax.servlet-api" % "3.1.0" % "provided",
         "com.typesafe.slick" %% "slick" % "3.1.1",
         "org.slf4j" % "slf4j-nop" % "1.6.4",
-        "org.postgresql" % "postgresql" % "9.4.1211",
-        "com.typesafe.slick" %% "slick-hikaricp" % "3.1.1",
         "com.typesafe" % "config" % "1.3.1",
-        "com.shuttleql" %% "gandalf" % "1.0"
+        "com.shuttleql" %% "gandalf" % "1.0",
+        "com.typesafe.slick" %% "slick" % "3.1.1",
+        "org.slf4j" % "slf4j-nop" % "1.6.4",
+        "org.postgresql" % "postgresql" % "9.4.1211"
       ),
       scalateTemplateConfig in Compile <<= (sourceDirectory in Compile){ base =>
         Seq(

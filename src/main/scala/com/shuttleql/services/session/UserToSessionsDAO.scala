@@ -31,7 +31,15 @@ object UserToSessionsDAO extends TableQuery(new UserToSessions(_)) {
     val newUserToSession = UserToSession(userId, sessionId, now, Some(now))
 
     try {
-      val result: UserToSession = Await.result(db.run(this returning this += newUserToSession), Duration.Inf)
+      val dbAction = (
+        for {
+          // Delete any existing userToSession
+          _ <- this.filter(_.sessionId === sessionId).filter(_.userId === userId).delete
+          newRow <- this returning this += newUserToSession
+        } yield newRow
+      ).transactionally
+
+      val result: UserToSession = Await.result(db.run(dbAction), Duration.Inf)
       Option(result)
     } catch {
       case e: Exception => None
@@ -65,7 +73,8 @@ object UserToSessionsDAO extends TableQuery(new UserToSessions(_)) {
     val db = initDb
 
     try {
-      val result: Seq[UserToSession] = Await.result(db.run(this.filter(_.sessionId === sessionId).result), Duration.Inf)
+      val result: Seq[UserToSession] = Await.result(db.run(this.filter(_.sessionId === sessionId)
+        .filter(x => x.checkedInAt === x.checkedOutAt).result), Duration.Inf)
       Option(result)
     } catch {
       case e: Exception => None

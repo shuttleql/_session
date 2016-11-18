@@ -43,11 +43,15 @@ object SessionsDAO extends TableQuery(new Sessions(_)) {
     val newSession = Session(0, new java.sql.Timestamp(System.currentTimeMillis()))
 
     try {
-      // Make all existing sessions inactive
-      Await.result(db.run(this.map(x => (x.isActive))
-            .update(false)), Duration.Inf)
+      val dbAction = (
+        for {
+          // Make all existing sessions inactive
+          _ <- this.map(x => (x.isActive)).update(false)
+          newRow <- this returning this += newSession
+        } yield newRow
+      ).transactionally
 
-      val result: Session = Await.result(db.run(this returning this += newSession), Duration.Inf)
+      val result: Session = Await.result(db.run(dbAction), Duration.Inf)
       Option(result)
     } catch {
       case e: Exception => None

@@ -25,12 +25,12 @@ object SessionsDAO extends TableQuery(new Sessions(_)) {
     }
   }
 
-  def current(): Option[Long] = {
+  def current(): Option[Session] = {
     val db = initDb
 
     try {
       val result: Session = Await.result(db.run(this.filter(_.isActive === true).result), Duration.Inf).headOption.get
-      Option(result.id)
+      Option(result)
     } catch {
       case e: Exception => None
     } finally {

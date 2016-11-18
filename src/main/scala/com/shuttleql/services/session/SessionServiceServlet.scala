@@ -66,8 +66,8 @@ class SessionServiceServlet extends SessionServiceStack with JacksonJsonSupport 
 
   get("/current") {
     SessionsDAO.current() match {
-      case Some(id) =>
-        Ok(id)
+      case Some(session) =>
+        Ok(session)
       case None =>
         NotFound(reason = "No session has started")
     }
@@ -97,8 +97,8 @@ class SessionServiceServlet extends SessionServiceStack with JacksonJsonSupport 
       val userId = user.id.asInstanceOf[Number].longValue
 
       SessionsDAO.current() match {
-        case Some(id) =>
-          UserToSessionsDAO.create(userId, id) match {
+        case Some(user) =>
+          UserToSessionsDAO.create(userId, user.id) match {
             case Some(results) =>
               Ok(results)
             case None =>
@@ -119,8 +119,8 @@ class SessionServiceServlet extends SessionServiceStack with JacksonJsonSupport 
       val userId = user.id.asInstanceOf[Number].longValue
 
       SessionsDAO.current() match {
-        case Some(id) =>
-          UserToSessionsDAO.update(userId, id) match {
+        case Some(user) =>
+          UserToSessionsDAO.update(userId, user.id) match {
             case Some(results) =>
               Ok(results)
             case None =>
@@ -137,8 +137,8 @@ class SessionServiceServlet extends SessionServiceStack with JacksonJsonSupport 
 
   get("/getCurrentUsers") {
     SessionsDAO.current() match {
-      case Some(id) =>
-        UserToSessionsDAO.findUsersBySession(id) match {
+      case Some(user) =>
+        UserToSessionsDAO.findUsersBySession(user.id) match {
           case Some(results) =>
             Ok(results)
           case None =>

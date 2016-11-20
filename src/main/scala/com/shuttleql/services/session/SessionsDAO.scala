@@ -1,14 +1,35 @@
 package com.shuttleql.services.session
 
+import com.amazonaws.auth.BasicAWSCredentials
+import com.amazonaws.regions.{Region, Regions}
+import com.amazonaws.services.sns.AmazonSNSClient
+import com.amazonaws.services.sns.model.PublishRequest
 import com.shuttleql.services.session.tables.{Session, Sessions}
+import com.typesafe.config.ConfigFactory
 import slick.lifted.TableQuery
 import slick.driver.PostgresDriver.api._
+
 import scala.concurrent.duration.Duration
 import scala.concurrent._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.postfixOps
 
 object SessionsDAO extends TableQuery(new Sessions(_)) {
+  val conf = ConfigFactory.load()
+
+  val creds = new BasicAWSCredentials(conf.getString("amazon.access_key"), conf.getString("amazon.secret_key"))
+  val snsClient = new AmazonSNSClient(creds)
+  snsClient.setRegion(Region.getRegion(Regions.US_WEST_2))
+
+  def broadcastSessionUpdate(): Unit = {
+    val publishReq = new PublishRequest()
+      .withTopicArn(conf.getString("amazon.topic_arn"))
+      .withSubject("update")
+      .withMessage("{ \"resource\": \"session\" }")
+
+    snsClient.publish(publishReq)
+  }
+
   def initDb() = {
     Database.forConfig("db")
   }
@@ -56,6 +77,7 @@ object SessionsDAO extends TableQuery(new Sessions(_)) {
     } catch {
       case e: Exception => None
     } finally {
+      broadcastSessionUpdate
       db.close
     }
   }
@@ -74,6 +96,7 @@ object SessionsDAO extends TableQuery(new Sessions(_)) {
     } catch {
       case e: Exception => None
     } finally {
+      broadcastSessionUpdate
       db.close
     }
   }

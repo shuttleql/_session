@@ -39,7 +39,8 @@ object SessionServiceBuild extends Build {
         "com.typesafe" % "config" % "1.3.1",
         "com.shuttleql" %% "gandalf" % "1.0",
         "com.typesafe.slick" %% "slick-hikaricp" % "3.1.1",
-        "org.postgresql" % "postgresql" % "9.4.1211"
+        "org.postgresql" % "postgresql" % "9.4.1211",
+        "com.amazonaws" % "aws-java-sdk" % "1.11.46"
       ),
       scalateTemplateConfig in Compile <<= (sourceDirectory in Compile){ base =>
         Seq(
